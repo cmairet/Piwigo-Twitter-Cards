@@ -8,6 +8,10 @@ Description: Twitter Cards
 
 if (!defined('PHPWG_ROOT_PATH')) die('Hacking attempt!');
 
+// Try using Extended Descriptions to sanitize multi-lingual description tag.
+if (defined('EXTENDED_DESC_PATH'))
+    include_once(EXTENDED_DESC_PATH . 'include/events.inc.php');
+
 class TwitterCard
 {
   function twittercard_load ($content)
@@ -28,6 +32,9 @@ class TwitterCard
     $title= str_replace('"', '\"',$row['name']);
     $description= str_replace('"', '\"',$row['comment']);
 
+    // Parse language tags in description if possible.
+    if (function_exists('get_user_language_desc'))
+        $description = get_user_language_desc($description);
 
     // Check if folder exists
     $thumbFolder = PHPWG_PLUGINS_PATH . basename(dirname(dirname(__FILE__))) . '/thumbs/' . dirname($url);
